@@ -46,7 +46,7 @@ The [Releases](https://github.com/unpins/dav1d/releases) page has standalone bin
 
 ## Build notes
 
-- **Windows variant:** `mingw` (cross from Linux). No POSIX gaps — dav1d is plain C / asm with its own thread abstraction.
-- **`meson.build` `arm64` substitution**: nixpkgs writes `cpu_family='arm64'` rather than `'aarch64'` into the meson cross-file on Apple Silicon. dav1d's existing `arm64` fallback in `src/meson.build` checks `cpu()` not `cpu_family()`, so it doesn't fire for nixpkgs' value layout. The shared `nativeFixes.dav1d` runs a recursive `find -name meson.build` to: (a) accept `arm64` alongside `aarch64`, (b) exclude `arm64` from `.startswith('arm')` 32-bit dispatch. Without it, aarch64-darwin tries to assemble `src/arm/32/*.S` (ARM-32 mnemonics) with the arm64 toolchain and fails. The override lives in [`nix-lib/native-overlay/dav1d.nix`](https://github.com/unpins/nix-lib/blob/main/native-overlay/dav1d.nix).
-- **No embedded resources.** Decoder is fully self-contained.
-- **No upstream features disabled.** Same decode capabilities on every platform.
+- **Windows:** `mingw` cross, single `.exe`, no companion DLLs.
+- **No upstream features disabled** on any platform.
+
+Platform fixes live in [`nix-lib/native-overlay/dav1d.nix`](https://github.com/unpins/nix-lib/blob/main/native-overlay/dav1d.nix).
