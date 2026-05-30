@@ -48,5 +48,6 @@ The [Releases](https://github.com/unpins/dav1d/releases) page has standalone bin
 
 - **Windows:** `mingw` cross, single `.exe`, no companion DLLs.
 - **No upstream features disabled** on any platform.
+- **Tests:** upstream's `checkasm` suite (every optimized SIMD kernel verified against its C reference) plus the header tests run as part of the build on every native target — x86_64 / aarch64 / i686, Linux and macOS — and must pass 0-fail (7/7 OK). Foreign cross targets (mingw, ppc64le, riscv64) build without checks, since the host binary can't execute on the builder.
 
 Platform fixes live in [`nix-lib/native-overlay/dav1d.nix`](https://github.com/unpins/nix-lib/blob/main/native-overlay/dav1d.nix).

@@ -34,7 +34,28 @@
     ulib.mkStandaloneFlake {
       inherit self;
       name = "dav1d";
-      build         = pkgs: withTools pkgs.pkgsStatic;
-      windowsBuild  = pkgs: withTools (ulib.mingwStaticCross pkgs);
+
+      # Smoke floor: `dav1d --version` prints the bare version (e.g.
+      # `1.5.2`) on every native ABI + the Windows runner. Pattern is a
+      # version-shaped string so it can't pass on an "unknown option"
+      # banner.
+      smoke = [ "--version" ];
+      smokePattern = "[0-9]+[.][0-9]+[.][0-9]+";
+
+      build = pkgs:
+        # nixpkgs ships dav1d with `doCheck = true` — the meson suite runs
+        # `checkasm` (every optimized SIMD kernel verified against its C
+        # reference) plus the header-compile tests. pkgsStatic forces
+        # doCheck off on the cross-ish musl build, so re-enable it wherever
+        # the build platform can run the host binary: native x86_64/aarch64
+        # plus 32-bit-on-64 (i686). checkasm is precisely the test that
+        # matters for a decoder, and it passed on musl-static here. Foreign
+        # cross targets (mingw, ppc64le, riscv64, darwin-from-linux) keep it
+        # off — `canExecute` is false there.
+        (withTools pkgs.pkgsStatic).overrideAttrs (_: {
+          doCheck = pkgs.pkgsStatic.stdenv.buildPlatform.canExecute
+            pkgs.pkgsStatic.stdenv.hostPlatform;
+        });
+      windowsBuild = pkgs: withTools (ulib.mingwStaticCross pkgs);
     };
 }
