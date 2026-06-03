@@ -11,18 +11,18 @@ Part of the [unpins](https://unpins.org) project — native single-binary builds
 
 Decodes AV1 bitstreams from `.ivf` containers. Also doubles as the de-facto AV1 decode benchmark.
 
-## Installation
+## Usage
 
-Install with [unpin](https://github.com/unpins/unpin):
+Run the `dav1d` program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-unpin dav1d
+unpin dav1d -i input.ivf -o output.yuv    # decode an AV1 bitstream to YUV
 ```
 
-Or run without installing:
+To install it onto your PATH:
 
 ```bash
-unpin run dav1d
+unpin install dav1d
 ```
 
 ## Build locally
