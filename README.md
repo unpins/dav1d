@@ -1,13 +1,13 @@
 # dav1d
 
-Standalone build of [dav1d](https://code.videolan.org/videolan/dav1d) — VideoLAN's AV1 decoder, reference for decode performance.
+[dav1d](https://code.videolan.org/videolan/dav1d) — VideoLAN's AV1 decoder, reference for decode performance. A single self-contained binary, built natively for Linux, macOS, and Windows.
 
 [![CI](https://github.com/unpins/dav1d/actions/workflows/dav1d.yml/badge.svg)](https://github.com/unpins/dav1d/actions)
 ![Linux](https://img.shields.io/badge/Linux-✓-success?logo=linux&logoColor=white)
 ![macOS](https://img.shields.io/badge/macOS-✓-success?logo=apple&logoColor=white)
 ![Windows](https://img.shields.io/badge/Windows-✓-success?logo=windows&logoColor=white)
 
-Part of the [unpins](https://unpins.org) project — native single-binary builds with no third-party runtime dependencies.
+Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](https://github.com/unpins/unpin): `unpin install dav1d`.
 
 Decodes AV1 bitstreams from `.ivf` containers. Also doubles as the de-facto AV1 decode benchmark.
 
