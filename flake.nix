@@ -1,5 +1,5 @@
 {
-  description = "Standalone build of dav1d (AV1 decoder CLI)";
+  description = "dav1d (AV1 decoder CLI) as a single self-contained binary";
 
   nixConfig = {
     extra-substituters = [ "https://unpins.cachix.org" ];
