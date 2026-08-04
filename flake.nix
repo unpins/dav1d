@@ -35,6 +35,12 @@
       inherit self;
       name = "dav1d";
 
+      # Build via the unpin-llvm engine + emit a bitcode multicall module.
+      engine = "unpin-llvm";
+      multicall = {
+        programs = [{ name = "dav1d"; }];
+      };
+
       # Smoke floor: `dav1d --version` prints the bare version (e.g.
       # `1.5.2`) on every native ABI + the Windows runner. Pattern is a
       # version-shaped string so it can't pass on an "unknown option"
