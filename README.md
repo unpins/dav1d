@@ -16,7 +16,8 @@ Decodes AV1 bitstreams from `.ivf` containers. Also doubles as the de-facto AV1 
 Run the `dav1d` program with [unpin](https://github.com/unpins/unpin):
 
 ```bash
-unpin dav1d -i input.ivf -o output.yuv    # decode an AV1 bitstream to YUV
+unpin dav1d -i input.ivf -o output.yuv          # decode an AV1 bitstream to YUV
+unpin dav1d -i input.ivf -o - --muxer yuv4mpeg2 # or write Y4M to standard output
 ```
 
 To install it onto your PATH:
@@ -46,7 +47,7 @@ The [Releases](https://github.com/unpins/dav1d/releases) page has standalone bin
 
 ## Build notes
 
-- **Windows:** `mingw` cross, single `.exe`, no companion DLLs.
+- **Windows:** a single `.exe`, no companion DLLs.
 - **No upstream features disabled** on any platform.
 - **No man page.** dav1d ships none upstream, so there is nothing to embed — `unpin man dav1d` has no page to show. `dav1d --help` documents the options.
 - **Tests:** upstream's `checkasm` suite (every optimized SIMD kernel verified against its C reference) plus the header tests run as part of the build on every native target — x86_64 / aarch64 / i686, Linux and macOS — and must pass 0-fail (7/7 OK). Foreign cross targets (mingw, ppc64le, riscv64) build without checks, since the host binary can't execute on the builder.

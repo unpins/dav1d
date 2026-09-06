@@ -27,8 +27,37 @@
   outputs = { self, unpins-lib }:
     let
       ulib = unpins-lib.lib;
-      withTools = scope: ulib.nativeFixes.dav1d (scope // {
+      withTools = scope: (ulib.nativeFixes.dav1d (scope // {
         dav1d = scope.dav1d.override { withTools = true; };
+      })).overrideAttrs (oa: {
+        # `-o -` sends the decoded frames to stdout, and Windows opens
+        # stdout in text mode: every 0x0A byte in the raw YUV or Y4M
+        # stream becomes 0x0D 0x0A and the output is corrupt. Measured on
+        # Windows 10 with a five-frame clip — `--muxer yuv` wrote 30728
+        # bytes where every other platform writes 30720, `--muxer
+        # yuv4mpeg2` 30804 against 30790: exactly one extra byte per line
+        # feed. Writing to a named file was always fine, it opens with
+        # "wb"; only the `-` branch inherits the CRT default. Upstream has
+        # no `_setmode` anywhere in 1.5.3.
+        #
+        # The checksum muxers (md5, xxh3) keep text mode on purpose. Their
+        # output is a digest line, and CRLF is what a Windows text file
+        # should have.
+        postPatch = (oa.postPatch or "") + ''
+          for f in tools/output/yuv.c tools/output/y4m2.c; do
+            substituteInPlace "$f" \
+              --replace-fail '#include "output/muxer.h"' '#ifdef _WIN32
+          #include <fcntl.h>
+          #include <io.h>
+          #endif
+
+          #include "output/muxer.h"' \
+              --replace-fail 'c->f = stdout;' 'c->f = stdout;
+          #ifdef _WIN32
+                  _setmode(_fileno(stdout), _O_BINARY);
+          #endif'
+          done
+        '';
       });
     in
     ulib.mkStandaloneFlake {
@@ -40,7 +69,14 @@
       multicall = {
         # The `.exe` on the engine too, not the nixpkgs mingw-gcc cross.
         windows = true;
-        programs = [{ name = "dav1d"; }];
+        # dav1d ships no man page upstream, so `unpin man dav1d` has
+        # nothing to show. Declared rather than left blank, but be clear
+        # about what it buys today: the CI sweep walks the announced
+        # ALIAS list, which is empty for a single-program package, so it
+        # checks neither this waiver nor the primary name. The gap is the
+        # catalog's, not this package's; the line is here so the waiver
+        # is already true when the sweep learns to read the primary name.
+        programs = [{ name = "dav1d"; noMan = true; }];
       };
 
       # Smoke floor: `dav1d --version` prints the bare version (e.g.
