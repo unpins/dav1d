@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [1.5.3-2] - 2026-09-26
+
 ### Fixed
 
 - Writing to standard output (`-o -`) no longer corrupts the picture data on
