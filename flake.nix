@@ -21,9 +21,9 @@
   #    `arm64` fallback checks `cpu()` not `cpu_family()` so it never
   #    fires). See nix-lib/native-overlay/dav1d.nix.
   #
-  # Order matters: `.override` re-invokes the function, so we apply
-  # it first and feed the result into `overrideAttrs` via the scope
-  # extend pattern (see [[override-arg-kills-overlay-overrideattrs]]).
+  # Order matters: `.override` re-invokes the package function and would
+  # discard an `overrideAttrs` applied before it, so it goes first and the
+  # fix's `overrideAttrs` runs on its result (the scope passed to the fix).
   outputs = { self, unpins-lib }:
     let
       ulib = unpins-lib.lib;
@@ -79,8 +79,8 @@
         programs = [{ name = "dav1d"; noMan = true; }];
       };
 
-      # Smoke floor: `dav1d --version` prints the bare version (e.g.
-      # `1.5.2`) on every native ABI + the Windows runner. Pattern is a
+      # Smoke floor: `dav1d --version` prints the bare version (X.Y.Z)
+      # on every native ABI + the Windows runner. Pattern is a
       # version-shaped string so it can't pass on an "unknown option"
       # banner.
       smoke = [ "--version" ];
