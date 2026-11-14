@@ -86,20 +86,11 @@
       smoke = [ "--version" ];
       smokePattern = "[0-9]+[.][0-9]+[.][0-9]+";
 
-      build = pkgs:
-        # nixpkgs ships dav1d with `doCheck = true` — the meson suite runs
-        # `checkasm` (every optimized SIMD kernel verified against its C
-        # reference) plus the header-compile tests. pkgsStatic forces
-        # doCheck off on the cross-ish musl build, so re-enable it wherever
-        # the build platform can run the host binary: native x86_64/aarch64
-        # plus 32-bit-on-64 (i686). checkasm is precisely the test that
-        # matters for a decoder, and it passed on musl-static here. Foreign
-        # cross targets (mingw, ppc64le, riscv64, darwin-from-linux) keep it
-        # off — `canExecute` is false there.
-        (withTools pkgs.pkgsStatic).overrideAttrs (_: {
-          doCheck = pkgs.pkgsStatic.stdenv.buildPlatform.canExecute
-            pkgs.pkgsStatic.stdenv.hostPlatform;
-        });
+      # checkasm (every SIMD kernel against its C reference) runs because
+      # nixpkgs sets `doCheck = true`; the stdenv drops it where the build
+      # machine cannot run the host (windows, ppc64le, riscv64, armv7l,
+      # darwin-x86_64).
+      build = pkgs: withTools pkgs.pkgsStatic;
       windowsBuild = pkgs: withTools (ulib.mingwStaticCross pkgs);
     };
 }
