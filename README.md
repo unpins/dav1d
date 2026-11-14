@@ -9,7 +9,7 @@
 
 Part of the [unpins](https://unpins.org) catalog; install it with [`unpin`](https://github.com/unpins/unpin): `unpin install dav1d`.
 
-Decodes AV1 bitstreams from `.ivf` containers. Also doubles as the de-facto AV1 decode benchmark.
+Decodes AV1 from IVF files and raw OBU streams (Annex B, Section 5). Also doubles as the de-facto AV1 decode benchmark.
 
 ## Usage
 
@@ -48,6 +48,6 @@ The [Releases](https://github.com/unpins/dav1d/releases) page has standalone bin
 ## Build notes
 
 - **Windows:** built with mingw-w64.
-- **No upstream features disabled** on any platform.
+- **Not included:** `dav1dplay`, the SDL example player (upstream builds it only on request, and nixpkgs does not).
 - **No man page.** dav1d ships none upstream, so there is nothing to embed — `unpin man dav1d` has no page to show. `dav1d --help` documents the options.
-- **Tests:** upstream's `checkasm` suite (every optimized SIMD kernel verified against its C reference) plus the header tests run as part of the build on every native target — x86_64 / aarch64 / i686, Linux and macOS — and must pass 0-fail (7/7 OK). Foreign cross targets (mingw, ppc64le, riscv64) build without checks, since the host binary can't execute on the builder.
+- **Tests:** `checkasm` (every SIMD kernel against its C reference) and the header tests run on Linux x86_64, aarch64 and i686 and on macOS Apple Silicon (0 failures under static-musl); Windows, ppc64le, riscv64, armv7l and macOS Intel are built without them, because the build machine can't execute those targets.
